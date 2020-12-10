@@ -1,4 +1,4 @@
-package com.scvsoft.planillapp.ui
+package com.scvsoft.planillapp.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
