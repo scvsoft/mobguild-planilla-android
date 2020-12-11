@@ -66,7 +66,9 @@ fun BottomNavigationBar(
 @Preview
 @Composable
 fun previewbottomBarPreview() {
-    BottomNavigationBar(rememberNavController())
+    MaterialTheme() {
+        BottomNavigationBar(rememberNavController())
+    }
 }
 
 @Composable

@@ -9,6 +9,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.scvsoft.planillapp.model.Payment
 import com.scvsoft.planillapp.model.PaymentPreferences
 import com.scvsoft.planillapp.model.Period
+import com.scvsoft.planillapp.ui.theme.DarkColorPalette
+import com.scvsoft.planillapp.ui.theme.LightColorPalette
 import java.util.*
 
 @Composable
@@ -23,17 +25,27 @@ fun HistoryContent(payments: List<Payment>) {
 
 }
 
-@Preview(showBackground = true)
+@Preview(name = "Payment History Light")
 @Composable
 fun HistoryContentPreview() {
-    HistoryContent(payments = mockData())
+    MaterialTheme(LightColorPalette) {
+        HistoryContent(payments = mockData())
+    }
+}
+
+@Preview(name = "Payment History Dark")
+@Composable
+fun HistoryContentPreviewDark() {
+    MaterialTheme(DarkColorPalette) {
+        HistoryContent(payments = mockData())
+    }
 }
 
 
 fun mockData() = listOf(
-        Payment(Period(Date(), Date(), 100.00), PaymentPreferences(100.00, 100.00, 100.00)),
-        Payment(Period(Date(), Date(), 30.00), PaymentPreferences(100.00, 100.00, 100.00)),
-        Payment(Period(Date(), Date(), 70.00), PaymentPreferences(100.00, 100.00, 100.00))
+        Payment(Period(Date(), Date(), 100), PaymentPreferences(100.00, 100.00, 100.00)),
+        Payment(Period(Date(), Date(), 30), PaymentPreferences(100.00, 100.00, 100.00)),
+        Payment(Period(Date(), Date(), 70), PaymentPreferences(100.00, 100.00, 100.00))
 )
 
 
