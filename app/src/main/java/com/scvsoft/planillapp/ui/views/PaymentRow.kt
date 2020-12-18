@@ -1,5 +1,6 @@
 package com.scvsoft.planillapp.ui.views
 
+import android.view.View
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -22,29 +24,135 @@ import com.scvsoft.planillapp.model.PaymentPreferences
 import com.scvsoft.planillapp.model.Period
 import com.scvsoft.planillapp.ui.theme.DarkColorPalette
 import com.scvsoft.planillapp.ui.theme.LightColorPalette
+import com.scvsoft.planillapp.ui.uitls.toCalendar
 import java.util.*
 
 @Composable
 fun PaymentRow(payment: Payment) {
-    Card(
-
-        backgroundColor = MaterialTheme.colors.secondary,
-        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp).then(
-            Modifier.height(130.dp)
-        ),
-        elevation = 2.dp
-    ) {
-        Column(modifier = Modifier.fillMaxSize().then(Modifier.padding(0.dp))) {
-            PaymentRowHeader(payment)
-            Divider(color =if (isSystemInDarkTheme()) Color(0xFF20233A) else Color(0xFFE3EBF2) )
-            Row() {
-                Text(text = payment.period.closeDate.toString())
-                Text(text = payment.period.startDate.toString())
+    Column() {
+        if (hasToShowYearHeader(payment)) YearHeader(payment.period.closeDate.toCalendar().get(Calendar.YEAR).toString())
+        Card(
+                backgroundColor = MaterialTheme.colors.secondary,
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 6.dp, bottom = 6.dp).then(
+                        Modifier.wrapContentHeight()
+                ),
+                elevation = 2.dp
+        ) {
+            Column(modifier = Modifier.fillMaxSize().then(Modifier.padding(0.dp)).height(160.dp)) {
+                PaymentRowHeader(payment)
+                Divider(color = if (isSystemInDarkTheme()) Color(0xFF20233A) else Color(0xFFE3EBF2))
+                PaymentRowBottom(payment)
             }
-
         }
     }
+}
 
+@Composable
+fun YearHeader(year: String) {
+    Text(text = year,
+            color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
+            modifier = Modifier.padding(start = 24.dp, end = 12.dp, top = 0.dp, bottom = 0.dp),
+            style = TextStyle(
+                    fontWeight = FontWeight.W800,
+                    fontSize = TextUnit.Companion.Sp(36),
+            ))
+}
+
+fun hasToShowYearHeader(payment: Payment): Boolean {
+    if (payment.period.closeDate.month == Calendar.DECEMBER) {
+        return true
+    }
+    return false
+
+}
+
+@Composable
+fun PaymentRowBottom(payment: Payment) {
+    Row(Modifier.fillMaxHeight()) {
+        Column(modifier = Modifier.weight(0.30f).fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                    color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
+
+                    text = "USD$ billed",
+                    style = TextStyle(
+                            fontWeight = FontWeight.W400,
+                            fontSize = TextUnit.Companion.Sp(14),
+                    )
+
+            )
+            Text(
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                    text = payment.paymentPreferences.dollarAmount.toString(),
+                    style = TextStyle(
+                            fontWeight = FontWeight.W700,
+                            fontSize = TextUnit.Companion.Sp(18),
+                    )
+
+            )
+        }
+
+        Spacer(
+                modifier = Modifier
+                        .preferredWidth(1.dp)
+                        .fillMaxHeight()
+                        .background(color = if (isSystemInDarkTheme()) Color(0xFF20233A) else Color(0xFFE3EBF2))
+        )
+        Column(modifier = Modifier.weight(0.40f).fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                    color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
+
+                    text = "USD$ in hand",
+                    style = TextStyle(
+                            fontWeight = FontWeight.W400,
+                            fontSize = TextUnit.Companion.Sp(14),
+                    )
+
+            )
+            Text(
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                    text = payment.paymentPreferences.dollarAmount.toString(),
+                    style = TextStyle(
+                            fontWeight = FontWeight.W700,
+                            fontSize = TextUnit.Companion.Sp(18),
+                    )
+
+            )
+        }
+
+        Spacer(
+                modifier = Modifier
+                        .preferredWidth(1.dp)
+                        .fillMaxHeight()
+                        .background(color = if (isSystemInDarkTheme()) Color(0xFF20233A) else Color(0xFFE3EBF2))
+        )
+        Column(modifier = Modifier.weight(0.30f).fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                    color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
+
+                    text = "AR$ in hand",
+                    style = TextStyle(
+                            fontWeight = FontWeight.W400,
+                            fontSize = TextUnit.Companion.Sp(14),
+                    )
+
+            )
+            Text(
+                    color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                    text = payment.paymentPreferences.pesoAmount.toString(),
+                    style = TextStyle(
+                            fontWeight = FontWeight.W700,
+                            fontSize = TextUnit.Companion.Sp(18),
+                    )
+
+            )
+        }
+    }
 }
 
 @Preview(name = "Payment Row Light")
@@ -52,7 +160,7 @@ fun PaymentRow(payment: Payment) {
 fun PaymentRow() {
     MaterialTheme(LightColorPalette) {
         val payment =
-            Payment(Period(Date(), Date(), 100), PaymentPreferences(100.00, 100.00, 100.00))
+                Payment(Period(Date(), Date(), 100), PaymentPreferences(100.00, 100.00, 100.00))
         PaymentRow(payment = payment)
     }
 }
@@ -63,7 +171,7 @@ fun PaymentRow() {
 fun PaymentRowDark() {
     MaterialTheme(DarkColorPalette) {
         val payment =
-            Payment(Period(Date(), Date(), 100), PaymentPreferences(100.00, 100.00, 100.00))
+                Payment(Period(Date(), Date(), 100), PaymentPreferences(100.00, 100.00, 100.00))
         PaymentRow(payment = payment)
     }
 
@@ -71,73 +179,72 @@ fun PaymentRowDark() {
 
 @Composable
 fun PaymentRowHeader(payment: Payment) {
-    ConstraintLayout(modifier = Modifier.fillMaxWidth().then(Modifier.padding(top = 5.dp,bottom = 5.dp))) {
-        val (payMonth, payYear,rateTittle,rateValue) = createRefs()
+    ConstraintLayout(modifier = Modifier.fillMaxWidth().then(Modifier.padding(top = 5.dp, bottom = 5.dp))) {
+        val (payMonth, payYear, rateTittle, rateValue) = createRefs()
 
-        val month =
-            Calendar.getInstance().getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
-        val year = Calendar.getInstance().get(Calendar.YEAR).toString();
+        val month = payment.period.closeDate.toCalendar().getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH).capitalize();
+        val year = payment.period.closeDate.toCalendar().get(Calendar.YEAR).toString();
         Text(
-            modifier = Modifier.padding(8.dp).constrainAs(payMonth){
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            },
-            text = month.capitalize(),
-            style = TextStyle(
-                fontWeight = FontWeight.W700,
-                fontSynthesis = FontSynthesis.Weight,
-                fontSize = TextUnit.Companion.Sp(20),
-                letterSpacing = TextUnit.Companion.Sp(0.4),
-                color = if (isSystemInDarkTheme()) Color(0xFF9BF4E4) else Color(0xFF01A67D)
-            )
+                modifier = Modifier.padding(8.dp).constrainAs(payMonth) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+                text = month.capitalize(),
+                style = TextStyle(
+                        fontWeight = FontWeight.W700,
+                        fontSynthesis = FontSynthesis.Weight,
+                        fontSize = TextUnit.Companion.Sp(20),
+                        letterSpacing = TextUnit.Companion.Sp(0.4),
+                        color = if (isSystemInDarkTheme()) Color(0xFF9BF4E4) else Color(0xFF01A67D)
+                )
 
         )
 
         Text(
-            color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
-            modifier = Modifier.constrainAs(payYear){
-                start.linkTo(payMonth.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            },
-            text = year,
-            style = TextStyle(
-                fontWeight = FontWeight.W400,
-                fontSize = TextUnit.Companion.Sp(14),
-            )
+                color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
+                modifier = Modifier.constrainAs(payYear) {
+                    start.linkTo(payMonth.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+                text = year,
+                style = TextStyle(
+                        fontWeight = FontWeight.W400,
+                        fontSize = TextUnit.Companion.Sp(14),
+                )
 
         )
 
         Text(
-            modifier = Modifier.padding(8.dp).constrainAs(rateValue){
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            },
-            text = "$"+ payment.period.rate.toString(),
-            style = TextStyle(
-                fontWeight = FontWeight.W700,
-                fontSynthesis = FontSynthesis.Weight,
-                fontSize = TextUnit.Companion.Sp(20),
-                letterSpacing = TextUnit.Companion.Sp(0.4),
-                color = if (isSystemInDarkTheme()) Color(0xFF9BF4E4) else Color(0xFF01A67D)
-            )
+                modifier = Modifier.padding(8.dp).constrainAs(rateValue) {
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+                text = "$" + payment.period.rate.toString(),
+                style = TextStyle(
+                        fontWeight = FontWeight.W700,
+                        fontSynthesis = FontSynthesis.Weight,
+                        fontSize = TextUnit.Companion.Sp(20),
+                        letterSpacing = TextUnit.Companion.Sp(0.4),
+                        color = if (isSystemInDarkTheme()) Color(0xFF9BF4E4) else Color(0xFF01A67D)
+                )
 
         )
 
         Text(
-            color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
-            modifier = Modifier.constrainAs(rateTittle){
-                end.linkTo(rateValue.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-            },
-            text ="USD Rate:",
-            style = TextStyle(
-                fontWeight = FontWeight.W400,
-                fontSize = TextUnit.Companion.Sp(14),
-            )
+                color = if (isSystemInDarkTheme()) Color(0xFFE3EBF2) else Color(0xFF66687B),
+                modifier = Modifier.constrainAs(rateTittle) {
+                    end.linkTo(rateValue.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                },
+                text = "USD Rate:",
+                style = TextStyle(
+                        fontWeight = FontWeight.W400,
+                        fontSize = TextUnit.Companion.Sp(14),
+                )
 
         )
     }
